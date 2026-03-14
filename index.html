@@ -2936,14 +2936,33 @@
   =========================== -->
   <script type="module">
     // ---- NEON DATABASE CONFIGURATION ----
-    const NEON_CONNECTION_STRING = 'postgresql://neondb_owner:npg_3Ly8WhOYmnDs@ep-lucky-haze-adjh5259-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-    // Vous la trouverez dans votre console Neon sous "Connection Details"
-    // Choisissez "HTTP" ou "Pooler" et copiez l'URL.
-    // Exemple: 'postgres://user:password@hostname/neondb'
-    const NEON_CONNECTION_STRING = 'VOTRE_LIEN_DE_CONNEXION_NEON_ICI';
+    // On nettoie la chaîne de connexion (parfois les paramètres URL gênent le driver HTTP)
+    let rawConn = 'postgresql://neondb_owner:npg_3Ly8WhOYmnDs@ep-lucky-haze-adjh5259-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+    const NEON_CONNECTION_STRING = rawConn.split('?')[0]; 
 
-    import { neon } from 'https://esm.sh/@neondatabase/serverless';
-    const sql = neon(NEON_CONNECTION_STRING);
+    import { neon } from 'https://cdn.jsdelivr.net/npm/@neondatabase/serverless@0.10.1/+esm';
+    
+    let sql;
+    try {
+      sql = neon(NEON_CONNECTION_STRING);
+      console.log("Neon initialisé avec :", NEON_CONNECTION_STRING);
+      
+      // Tentative de création de la table (silencieuse si déjà fait)
+      sql`CREATE TABLE IF NOT EXISTS users (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL,
+          email TEXT UNIQUE NOT NULL,
+          password TEXT NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )`.then(() => console.log("Table 'users' prête."))
+       .catch(e => {
+         console.warn("Vérification table :", e.message);
+         // Si c'est une erreur de connexion, on alerte
+         if (e.message.includes('fetch')) alert("Erreur de connexion à Neon (CORS ou réseau). Vérifiez votre console F12.");
+       });
+    } catch (e) {
+      alert("Erreur critique initialisation Neon : " + e.message);
+    }
 
     // ---- HAMBURGER ----
     const btn = document.getElementById('hamburgerBtn');
@@ -3018,9 +3037,6 @@
       const password = document.getElementById('reg-password').value;
 
       try {
-        if (NEON_CONNECTION_STRING === 'VOTRE_LIEN_DE_CONNEXION_NEON_ICI') {
-          throw new Error("Veuillez configurer votre NEON_CONNECTION_STRING dans le code.");
-        }
 
         // Check if user exists
         const existing = await sql`SELECT email FROM users WHERE email = ${email}`;
@@ -3048,9 +3064,6 @@
       const password = document.getElementById('log-password').value;
 
       try {
-        if (NEON_CONNECTION_STRING === 'VOTRE_LIEN_DE_CONNEXION_NEON_ICI') {
-          throw new Error("Veuillez configurer votre NEON_CONNECTION_STRING dans le code.");
-        }
 
         const users = await sql`SELECT name FROM users WHERE email = ${email} AND password = ${password}`;
 

@@ -863,6 +863,77 @@
     /* ===========================
        RESPONSIVE
     =========================== */
+    /* ===========================
+       AUTH MODALS
+    =========================== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(5,8,15,0.85);
+      backdrop-filter: blur(12px);
+      z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease;
+      padding: 1rem;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    
+    .modal-content {
+      background: var(--dark-2);
+      width: 100%; max-width: 420px;
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 40px rgba(201,168,76,0.1);
+    }
+    .modal-overlay.open .modal-content { transform: translateY(0); }
+    
+    .modal-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      background: none; border: none; font-size: 1.5rem; color: var(--text-muted);
+      cursor: pointer; transition: color 0.3s;
+    }
+    .modal-close:hover { color: var(--gold); }
+    
+    .modal-header { margin-bottom: 2rem; text-align: center; }
+    .modal-header h2 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .modal-header p { font-size: 0.9rem; color: var(--text-muted); }
+    
+    .auth-form { display: flex; flex-direction: column; gap: 1.25rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .form-group label { font-size: 0.8rem; color: var(--gold); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .form-group input {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 0.9rem 1.2rem;
+      color: var(--text);
+      font-family: inherit; font-size: 0.95rem;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .form-group input:focus {
+      outline: none; border-color: var(--gold); background: rgba(255,255,255,0.06);
+    }
+    
+    .auth-footer { margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
+    .auth-footer a { color: var(--gold); text-decoration: none; font-weight: 500; }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--dark-3); border: 1px solid var(--gold);
+      padding: 1rem 1.5rem; border-radius: 12px;
+      color: var(--text); z-index: 3000;
+      transform: translateY(100px); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; align-items: center; gap: 0.75rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .toast.show { transform: translateY(0); }
+    .toast .icon { color: var(--gold); font-size: 1.2rem; }
+
     @media (max-width: 1100px) {
       .hero-content { grid-template-columns: 1fr; gap: 3rem; }
       .hero-visual { display: flex; justify-content: center; }
@@ -934,8 +1005,8 @@
       </ul>
 
       <div class="nav-cta">
-        <a href="#connexion" class="btn btn-ghost">Se connecter</a>
-        <a href="#ouvrir" class="btn btn-gold">Ouvrir un compte</a>
+        <a href="javascript:void(0)" onclick="openModal('loginModal')" class="btn btn-ghost">Se connecter</a>
+        <a href="javascript:void(0)" onclick="openModal('signupModal')" class="btn btn-gold">Ouvrir un compte</a>
       </div>
 
       <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
@@ -951,8 +1022,8 @@
     <a href="#securite" onclick="closeMobile()">Sécurité</a>
     <a href="#app" onclick="closeMobile()">Application</a>
     <a href="#faq" onclick="closeMobile()">FAQ</a>
-    <a href="#connexion" class="btn btn-ghost">Se connecter</a>
-    <a href="#ouvrir" class="btn btn-gold">Ouvrir un compte</a>
+    <a href="#connexion" onclick="closeMobile(); openModal('loginModal')" class="btn btn-ghost">Se connecter</a>
+    <a href="#ouvrir" onclick="closeMobile(); openModal('signupModal')" class="btn btn-gold">Ouvrir un compte</a>
   </div>
 
   <!-- ===========================
@@ -975,7 +1046,7 @@
           Baron's Bank allie tradition bancaire et innovation digitale pour vous offrir une expérience financière inégalée. Votre patrimoine, protégé et valorisé par des experts dédiés.
         </p>
         <div class="hero-actions">
-          <a href="#ouvrir" class="btn btn-gold btn-lg">Ouvrir un compte gratuit</a>
+          <a href="javascript:void(0)" onclick="openModal('signupModal')" class="btn btn-gold btn-lg">Ouvrir un compte gratuit</a>
           <a href="#services" class="btn btn-outline-gold btn-lg">Découvrir nos services</a>
         </div>
         <div class="hero-trust">
@@ -1187,7 +1258,7 @@
             <li>Application mobile complète</li>
             <li>Assistance client 6j/7</li>
           </ul>
-          <a href="#" class="btn btn-outline-gold" style="width:100%; justify-content:center;">Ouvrir un Classic</a>
+          <a href="javascript:void(0)" onclick="openModal('signupModal')" class="btn btn-outline-gold" style="width:100%; justify-content:center;">Ouvrir un Classic</a>
         </div>
 
         <!-- Premium -->
@@ -1207,7 +1278,7 @@
             <li>Conseiller dédié</li>
             <li>Transferts internationaux offerts</li>
           </ul>
-          <a href="#" class="btn btn-gold" style="width:100%; justify-content:center;">Ouvrir un Premium</a>
+          <a href="javascript:void(0)" onclick="openModal('signupModal')" class="btn btn-gold" style="width:100%; justify-content:center;">Ouvrir un Premium</a>
         </div>
 
         <!-- Private -->
@@ -1227,7 +1298,7 @@
             <li>Assurance vie sur mesure</li>
             <li>Accès événements privés</li>
           </ul>
-          <a href="#" class="btn btn-outline-gold" style="width:100%; justify-content:center;">Devenir Baron</a>
+          <a href="javascript:void(0)" onclick="openModal('signupModal')" class="btn btn-outline-gold" style="width:100%; justify-content:center;">Devenir Baron</a>
         </div>
       </div>
     </div>
@@ -1538,8 +1609,8 @@
         <h2>Rejoignez <em>Baron's Bank</em><br/>dès aujourd'hui</h2>
         <p class="section-desc">Ouvrez votre compte en quelques minutes et découvrez une expérience bancaire sans compromis. Aucun frais d'ouverture. Sans engagement.</p>
         <div class="cta-actions">
-          <a href="#" class="btn btn-gold btn-lg">Ouvrir mon compte — Gratuit</a>
-          <a href="#" class="btn btn-ghost btn-lg">Parler à un conseiller</a>
+          <a href="javascript:void(0)" onclick="openModal('signupModal')" class="btn btn-gold btn-lg">Ouvrir mon compte — Gratuit</a>
+          <a href="https://wa.me/22997061706" target="_blank" class="btn btn-ghost btn-lg">Parler à un conseiller</a>
         </div>
       </div>
     </div>
@@ -1612,6 +1683,70 @@
   </footer>
 
   <!-- ===========================
+       AUTH MODALS HTML
+  =========================== -->
+  
+  <!-- Sign Up Modal -->
+  <div id="signupModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('signupModal')">&times;</button>
+      <div class="modal-header">
+        <h2>Ouvrir un compte</h2>
+        <p>Commencez votre voyage vers l'excellence financière.</p>
+      </div>
+      <form class="auth-form" id="signupForm">
+        <div class="form-group">
+          <label for="reg-name">Nom Complet</label>
+          <input type="text" id="reg-name" placeholder="Alexandre Baron" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Adresse Email</label>
+          <input type="email" id="reg-email" placeholder="contact@exemple.com" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Mot de passe</label>
+          <input type="password" id="reg-password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%; margin-top:1rem;">Créer mon compte</button>
+      </form>
+      <div class="auth-footer">
+        Déjà client ? <a href="javascript:void(0)" onclick="closeModal('signupModal'); openModal('loginModal')">Se connecter</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+      <div class="modal-header">
+        <h2>Bienvenue</h2>
+        <p>Accédez à votre espace sécurisé.</p>
+      </div>
+      <form class="auth-form" id="loginForm">
+        <div class="form-group">
+          <label for="log-email">Adresse Email</label>
+          <input type="email" id="log-email" placeholder="contact@exemple.com" required>
+        </div>
+        <div class="form-group">
+          <label for="log-password">Mot de passe</label>
+          <input type="password" id="log-password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%; margin-top:1rem;">S'identifier</button>
+      </form>
+      <div class="auth-footer">
+        Nouveau ici ? <a href="javascript:void(0)" onclick="closeModal('loginModal'); openModal('signupModal')">Ouvrir un compte</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="authToast" class="toast">
+    <span class="icon">✨</span>
+    <span id="toastMsg">Action réussie !</span>
+  </div>
+
+  <!-- ===========================
        JAVASCRIPT
   =========================== -->
   <script>
@@ -1659,6 +1794,105 @@
       });
       navLinks.forEach(link => {
         link.style.color = link.getAttribute('href') === `#${current}` ? 'var(--gold)' : '';
+      });
+    });
+
+    // ---- AUTH LOGIC ----
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('authToast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // Signup Implementation
+    document.getElementById('signupForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+
+      // Simple persistence in localStorage
+      const users = JSON.parse(localStorage.getItem('barons_users') || '[]');
+      if (users.find(u => u.email === email)) {
+        alert('Cet email est déjà utilisé.');
+        return;
+      }
+
+      users.push({ name, email, password });
+      localStorage.setItem('barons_users', JSON.stringify(users));
+      
+      closeModal('signupModal');
+      showToast(`Félicitations ${name}, votre compte a été créé avec succès !`);
+      
+      // Auto-login (simple mock)
+      handleSuccessfulLogin(name);
+    });
+
+    // Login Implementation
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('log-email').value;
+      const password = document.getElementById('log-password').value;
+
+      const users = JSON.parse(localStorage.getItem('barons_users') || '[]');
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (user) {
+        closeModal('loginModal');
+        showToast(`Heureux de vous revoir, ${user.name} !`);
+        handleSuccessfulLogin(user.name);
+      } else {
+        alert('Email ou mot de passe incorrect.');
+      }
+    });
+
+    function handleSuccessfulLogin(name) {
+      // Update UI to show logged in state
+      const navCta = document.querySelector('.nav-cta');
+      const mobileCta = document.getElementById('mobileNav');
+      
+      const loggedInHtml = `
+        <span style="font-size: 0.9rem; color: var(--gold); font-weight: 600;">Bienvenue, ${name.split(' ')[0]}</span>
+        <a href="javascript:void(0)" onclick="location.reload()" class="btn btn-ghost">Déconnexion</a>
+      `;
+
+      navCta.innerHTML = loggedInHtml;
+      
+      // Update mobile nav as well
+      const mobileBtns = mobileCta.querySelectorAll('.btn');
+      mobileBtns.forEach(b => b.remove());
+      const div = document.createElement('div');
+      div.style.padding = '1rem 0';
+      div.innerHTML = loggedInHtml;
+      mobileCta.appendChild(div);
+      
+      // Save session
+      sessionStorage.setItem('barons_session', name);
+    }
+
+    // Check for existing session on load
+    window.addEventListener('load', () => {
+      const session = sessionStorage.getItem('barons_session');
+      if (session) {
+        handleSuccessfulLogin(session);
+      }
+    });
+
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal(overlay.id);
       });
     });
   </script>

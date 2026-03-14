@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baron's Bank — L'Excellence Financière</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ===========================
+       CSS VARIABLES & RESET
+    =========================== */
+    :root {
+      --gold:        #C9A84C;
+      --gold-light:  #E8C96B;
+      --gold-dim:    rgba(201,168,76,0.18);
+      --dark:        #05080F;
+      --dark-2:      #090D17;
+      --dark-3:      #0E1320;
+      --glass-bg:    rgba(255,255,255,0.04);
+      --glass-border:rgba(201,168,76,0.20);
+      --text:        #EAE6DC;
+      --text-muted:  rgba(234,230,220,0.55);
+      --radius:      18px;
+      --radius-sm:   10px;
+      --shadow-gold: 0 0 60px rgba(201,168,76,0.12);
+      --transition:  0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    ::selection { background: var(--gold-dim); color: var(--gold-light); }
+
+    /* ===========================
+       SCROLLBAR
+    =========================== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+    /* ===========================
+       NOISE TEXTURE OVERLAY
+    =========================== */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: .45;
+    }
+
+    /* ===========================
+       ANIMATED BACKGROUND ORBS
+    =========================== */
+    .bg-orbs {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(120px); opacity: 0.07; animation: float 20s ease-in-out infinite;
+    }
+    .orb-1 { width:600px; height:600px; background:var(--gold); top:-200px; left:-200px; animation-delay:0s; }
+    .orb-2 { width:500px; height:500px; background:#2A4B8C; top:40%; right:-150px; animation-delay:-7s; }
+    .orb-3 { width:400px; height:400px; background:var(--gold); bottom:-100px; left:30%; animation-delay:-14s; }
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); }
+      33%      { transform: translateY(-40px) scale(1.05); }
+      66%      { transform: translateY(20px) scale(0.97); }
+    }
+
+    /* ===========================
+       NAVBAR
+    =========================== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 0 5%;
+      backdrop-filter: blur(20px);
+      background: rgba(5,8,15,0.75);
+      border-bottom: 1px solid var(--glass-border);
+      transition: var(--transition);
+    }
+    .navbar-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 76px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 12px; text-decoration: none;
+    }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 700; color: var(--dark);
+      box-shadow: 0 4px 20px rgba(201,168,76,0.4);
+    }
+    .logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; font-weight: 600; color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .logo-text span { color: var(--gold); }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 2rem; list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none; color: var(--text-muted);
+      font-size: .9rem; font-weight: 400; letter-spacing: .04em;
+      transition: color .3s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px; background: var(--gold);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    .nav-cta {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+      padding: .65rem 1.5rem; border-radius: 50px;
+      font-family: 'Outfit', sans-serif; font-size: .875rem; font-weight: 500;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: var(--transition); letter-spacing: .04em;
+    }
+    .btn-ghost {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid rgba(234,230,220,0.15);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(234,230,220,.4); }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--dark); font-weight: 600;
+      box-shadow: 0 4px 24px rgba(201,168,76,0.35);
+    }
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 36px rgba(201,168,76,0.5);
+    }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 8px; background: none; border: none;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--text); border-radius: 2px; transition: var(--transition);
+    }
+
+    /* ===========================
+       MOBILE NAV
+    =========================== */
+    .mobile-nav {
+      display: none; position: fixed; top: 76px; left: 0; right: 0;
+      background: rgba(9,13,23,0.97); backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 2rem 5%; z-index: 999; flex-direction: column; gap: 1.5rem;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      text-decoration: none; color: var(--text-muted);
+      font-size: 1.1rem; transition: color .3s;
+    }
+    .mobile-nav a:hover { color: var(--gold); }
+    .mobile-nav .btn { width: 100%; justify-content: center; }
+
+    /* ===========================
+       HERO
+    =========================== */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 140px 5% 100px;
+      overflow: hidden;
+    }
+    .hero-grid-lines {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 5rem;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .4rem 1rem; border-radius: 50px;
+      background: var(--gold-dim); border: 1px solid var(--glass-border);
+      font-size: .8rem; color: var(--gold-light); letter-spacing: .08em;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+      animation: fadeUp .8s ease both;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--gold); animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.5; transform:scale(1.4); }
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 5.5vw, 5.5rem);
+      font-weight: 300; line-height: 1.05; letter-spacing: -.01em;
+      color: var(--text);
+      animation: fadeUp .8s .1s ease both;
+    }
+    h1 em { font-style: italic; color: var(--gold); }
+    h1 strong { font-weight: 600; display: block; }
+
+    .hero-desc {
+      font-size: 1.05rem; color: var(--text-muted); line-height: 1.75;
+      max-width: 480px; margin: 1.5rem 0 2.5rem;
+      animation: fadeUp .8s .2s ease both;
+    }
+    .hero-actions {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp .8s .3s ease both;
+    }
+    .btn-outline-gold {
+      background: transparent; color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.4);
+    }
+    .btn-outline-gold:hover {
+      background: var(--gold-dim); border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+    .hero-trust {
+      display: flex; align-items: center; gap: 1.5rem; margin-top: 3rem;
+      animation: fadeUp .8s .4s ease both;
+    }
+    .trust-avatars {
+      display: flex;
+    }
+    .trust-avatars span {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid var(--dark);
+      background: linear-gradient(135deg, #2A4B8C, var(--gold-dim));
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; color: var(--gold-light);
+      margin-left: -8px;
+    }
+    .trust-avatars span:first-child { margin-left: 0; }
+    .trust-text { font-size: .82rem; color: var(--text-muted); }
+    .trust-text strong { color: var(--gold-light); }
+
+    /* HERO CARD */
+    .hero-visual {
+      position: relative;
+      animation: fadeIn 1s .4s ease both;
+    }
+    .bank-card {
+      position: relative; width: 100%; max-width: 380px; margin: 0 auto;
+      aspect-ratio: 1.586/1;
+      background: linear-gradient(135deg, #111827 0%, #1E2940 50%, #0E1320 100%);
+      border-radius: 22px;
+      padding: 2rem;
+      border: 1px solid rgba(201,168,76,0.25);
+      box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 40px rgba(201,168,76,.08);
+      overflow: hidden;
+      transform: perspective(1000px) rotateY(-5deg) rotateX(3deg);
+      transition: transform .6s ease;
+    }
+    .bank-card:hover {
+      transform: perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(-6px);
+    }
+    .bank-card::before {
+      content: '';
+      position: absolute; top: -60%; left: -40%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 40% 30%, rgba(201,168,76,0.12), transparent 60%);
+      pointer-events: none;
+    }
+    .card-chip {
+      width: 44px; height: 34px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 6px; margin-bottom: auto;
+      position: relative; overflow: hidden;
+    }
+    .card-chip::after {
+      content: ''; position: absolute;
+      inset: 4px; border: 1px solid rgba(0,0,0,.15); border-radius: 3px;
+    }
+    .card-number {
+      font-family: 'Outfit', sans-serif; font-size: 1.1rem;
+      letter-spacing: .18em; color: rgba(255,255,255,.8);
+      margin-top: 1.4rem;
+    }
+    .card-details {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-top: 1.2rem;
+    }
+    .card-label { font-size: .65rem; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .1em; }
+    .card-value { font-size: .9rem; color: rgba(255,255,255,.85); margin-top: .2rem; }
+    .card-logo {
+      position: absolute; top: 1.8rem; right: 1.8rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-weight: 700; color: var(--gold);
+      letter-spacing: .05em;
+    }
+    .card-contactless {
+      position: absolute; bottom: 1.8rem; right: 1.8rem;
+      width: 28px; height: 28px; opacity: .6;
+    }
+    .card-contactless::before,
+    .card-contactless::after {
+      content: ''; position: absolute;
+      border: 2px solid var(--gold); border-radius: 50%;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+    }
+    .card-contactless::before { width: 100%; height: 100%; }
+    .card-contactless::after  { width: 55%; height: 55%; }
+
+    /* Floating Stats */
+    .hero-stats {
+      position: absolute;
+      display: flex; flex-direction: column; gap: 1rem;
+      right: -40px; top: 50%; transform: translateY(-50%);
+    }
+    .stat-pill {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px; padding: .85rem 1.2rem;
+      display: flex; align-items: center; gap: .8rem;
+      white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(0,0,0,.3);
+      animation: slideIn .8s ease both;
+    }
+    .stat-pill:nth-child(2) { animation-delay: .15s; }
+    .stat-pill:nth-child(3) { animation-delay: .3s; }
+    @keyframes slideIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:none; } }
+    .stat-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--gold-dim); display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .stat-val { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .stat-lbl { font-size: .7rem; color: var(--text-muted); }
+
+    /* ===========================
+       MARQUEE / TICKER
+    =========================== */
+    .ticker {
+      background: var(--gold-dim); border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      padding: .7rem 0; overflow: hidden; position: relative; z-index: 2;
+    }
+    .ticker-track {
+      display: flex; gap: 3rem; animation: ticker 25s linear infinite;
+      width: max-content;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .ticker-item {
+      display: flex; align-items: center; gap: .6rem;
+      font-size: .82rem; color: var(--gold-light); letter-spacing: .06em;
+      white-space: nowrap;
+    }
+    .ticker-item .sep { color: var(--gold); opacity: .4; }
+
+    /* ===========================
+       SECTIONS BASE
+    =========================== */
+    section { position: relative; z-index: 1; }
+    .section-inner {
+      max-width: 1280px; margin: 0 auto;
+      padding: 120px 5%;
+    }
+    .section-label {
+      display: inline-block; font-size: .75rem; font-weight: 500;
+      color: var(--gold); letter-spacing: .15em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .section-label::before {
+      content: '— '; opacity: .6;
+    }
+    h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 4vw, 3.8rem);
+      font-weight: 300; line-height: 1.1; color: var(--text);
+    }
+    h2 em { font-style: italic; color: var(--gold); }
+    h2 strong { font-weight: 600; }
+    .section-desc {
+      font-size: 1rem; color: var(--text-muted); line-height: 1.8;
+      max-width: 580px; margin-top: 1rem;
+    }
+
+    /* ===========================
+       FEATURES / SERVICES
+    =========================== */
+    .features { background: var(--dark-2); }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem; margin-top: 4rem;
+    }
+    .feature-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 2.2rem;
+      backdrop-filter: blur(20px);
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+      cursor: default;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.06), transparent);
+      opacity: 0; transition: opacity .4s;
+    }
+    .feature-card:hover { transform: translateY(-6px); border-color: rgba(201,168,76,.45); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-card:hover .feature-icon { background: var(--gold); }
+    .feature-card:hover .feature-icon svg { stroke: var(--dark); }
+
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--gold-dim); display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem; transition: background .4s;
+    }
+    .feature-icon svg { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 1.8; transition: stroke .4s; }
+    .feature-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.45rem; font-weight: 600; color: var(--text);
+      margin-bottom: .75rem;
+    }
+    .feature-card p { font-size: .9rem; color: var(--text-muted); line-height: 1.7; }
+    .feature-card .feature-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin-top: 1.4rem; font-size: .85rem; color: var(--gold);
+      text-decoration: none; font-weight: 500;
+      transition: gap .3s;
+    }
+    .feature-card:hover .feature-link { gap: .7rem; }
+
+    /* ===========================
+       STATS
+    =========================== */
+    .stats-section {
+      background: var(--dark);
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 0;
+    }
+    .stat-item {
+      padding: 3rem 2rem; text-align: center;
+      border-right: 1px solid var(--glass-border);
+      transition: background .4s;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: var(--glass-bg); }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.5rem; font-weight: 300; color: var(--gold-light);
+      line-height: 1;
+    }
+    .stat-number sup { font-size: 1.5rem; }
+    .stat-unit { color: var(--gold); }
+    .stat-desc { font-size: .85rem; color: var(--text-muted); margin-top: .5rem; letter-spacing: .04em; }
+
+    /* ===========================
+       PRODUCTS / ACCOUNTS
+    =========================== */
+    .products { background: var(--dark-2); }
+    .products-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 3.5rem;
+    }
+    .products-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    }
+    .product-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      backdrop-filter: blur(20px);
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+    }
+    .product-card.featured {
+      background: linear-gradient(145deg, rgba(201,168,76,.12), rgba(201,168,76,.04));
+      border-color: rgba(201,168,76,.5);
+    }
+    .product-card.featured::after {
+      content: 'Populaire';
+      position: absolute; top: 1.2rem; right: -2rem;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--dark); font-size: .7rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .3rem 3rem; transform: rotate(45deg);
+    }
+    .product-card:hover { transform: translateY(-6px); }
+    .product-tier {
+      font-size: .75rem; color: var(--gold); letter-spacing: .12em;
+      text-transform: uppercase; font-weight: 500; margin-bottom: .75rem;
+    }
+    .product-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 600; color: var(--text);
+      margin-bottom: .5rem;
+    }
+    .product-price {
+      display: flex; align-items: baseline; gap: .3rem;
+      margin: 1.5rem 0;
+    }
+    .price-amount {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem; font-weight: 300; color: var(--gold-light);
+    }
+    .price-period { font-size: .85rem; color: var(--text-muted); }
+    .product-features {
+      list-style: none; margin-bottom: 2rem;
+      display: flex; flex-direction: column; gap: .7rem;
+    }
+    .product-features li {
+      display: flex; align-items: center; gap: .7rem;
+      font-size: .88rem; color: var(--text-muted);
+    }
+    .product-features li::before {
+      content: '';
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--gold-dim); border: 1px solid rgba(201,168,76,.4);
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpolyline points='3,8 6.5,11.5 13,5' stroke='%23C9A84C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+
+    /* ===========================
+       HOW IT WORKS
+    =========================== */
+    .how-section { background: var(--dark-3); }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 2rem; margin-top: 4rem; position: relative;
+    }
+    .steps-grid::before {
+      content: '';
+      position: absolute; top: 40px; left: 12%; right: 12%;
+      height: 1px; background: linear-gradient(90deg, transparent, var(--glass-border), var(--gold-dim), var(--glass-border), transparent);
+    }
+    .step-item { text-align: center; padding: 1rem; }
+    .step-number {
+      width: 80px; height: 80px; margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg); backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 300; color: var(--gold);
+      position: relative; transition: var(--transition);
+    }
+    .step-item:hover .step-number {
+      background: var(--gold-dim); border-color: var(--gold);
+      transform: scale(1.08);
+    }
+    .step-item h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem; font-weight: 600; color: var(--text);
+      margin-bottom: .5rem;
+    }
+    .step-item p { font-size: .85rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ===========================
+       SECURITY
+    =========================== */
+    .security { background: var(--dark-2); }
+    .security-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+    }
+    .security-visual {
+      position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .shield-container {
+      position: relative; width: 280px; height: 280px;
+    }
+    .shield-ring {
+      position: absolute; border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      animation: rotate 20s linear infinite;
+    }
+    .shield-ring:nth-child(1) { inset: 0; animation-duration: 30s; }
+    .shield-ring:nth-child(2) { inset: 30px; animation-duration: 20s; animation-direction: reverse; }
+    .shield-ring:nth-child(3) { inset: 60px; animation-duration: 14s; }
+    @keyframes rotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .shield-ring::after {
+      content: ''; position: absolute; top: 0; left: 50%;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--gold); transform: translate(-50%, -50%);
+      box-shadow: 0 0 12px var(--gold);
+    }
+    .shield-core {
+      position: absolute; inset: 60px;
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .security-features {
+      display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2.5rem;
+    }
+    .sec-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1.2rem; border-radius: var(--radius-sm);
+      border: 1px solid transparent; transition: var(--transition);
+    }
+    .sec-item:hover {
+      border-color: var(--glass-border); background: var(--glass-bg);
+    }
+    .sec-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--gold-dim); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 1.1rem;
+    }
+    .sec-item h4 { font-size: .95rem; font-weight: 600; color: var(--text); margin-bottom: .25rem; }
+    .sec-item p { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ===========================
+       TESTIMONIALS
+    =========================== */
+    .testimonials { background: var(--dark); }
+    .testimonials-slider {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1.5rem; margin-top: 4rem;
+    }
+    .testimonial-card {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius); padding: 2rem;
+      backdrop-filter: blur(20px); transition: var(--transition);
+    }
+    .testimonial-card:hover { transform: translateY(-5px); border-color: rgba(201,168,76,.35); }
+    .testimonial-stars { color: var(--gold); font-size: 1rem; letter-spacing: .1em; margin-bottom: 1rem; }
+    .testimonial-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem; font-weight: 300; font-style: italic;
+      color: var(--text); line-height: 1.7; margin-bottom: 1.5rem;
+    }
+    .testimonial-author { display: flex; align-items: center; gap: .8rem; }
+    .author-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dim), rgba(42,75,140,.4));
+      border: 1px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; color: var(--gold-light); font-weight: 600;
+    }
+    .author-name { font-size: .9rem; font-weight: 600; color: var(--text); }
+    .author-role { font-size: .75rem; color: var(--text-muted); }
+
+    /* ===========================
+       APP SECTION
+    =========================== */
+    .app-section { background: var(--dark-2); }
+    .app-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 6rem;
+    }
+    .app-phones {
+      position: relative; height: 500px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phone-mockup {
+      width: 200px;
+      background: linear-gradient(145deg, #111827, #1E2940);
+      border-radius: 30px;
+      border: 2px solid rgba(201,168,76,.25);
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,.5);
+      position: absolute;
+    }
+    .phone-mockup.main {
+      width: 220px; z-index: 2;
+      box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 40px rgba(201,168,76,.1);
+    }
+    .phone-mockup.back {
+      width: 190px; right: 0; top: 30px; z-index: 1;
+      transform: rotate(6deg); opacity: .7;
+    }
+    .phone-screen {
+      background: var(--dark-3); margin: 10px; border-radius: 22px;
+      padding: 1.2rem 1rem;
+    }
+    .phone-notch {
+      width: 80px; height: 22px; border-radius: 0 0 14px 14px;
+      background: var(--dark); margin: 0 auto 1rem;
+    }
+    .phone-balance-label { font-size: .62rem; color: var(--text-muted); letter-spacing: .08em; }
+    .phone-balance {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; color: var(--text); margin: .2rem 0 1rem;
+    }
+    .phone-balance span { font-size: 1rem; color: var(--text-muted); }
+    .phone-graph {
+      height: 60px; position: relative; margin-bottom: 1rem;
+    }
+    .phone-graph svg { width: 100%; height: 100%; }
+    .phone-actions {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: .5rem;
+    }
+    .phone-action {
+      display: flex; flex-direction: column; align-items: center; gap: .3rem;
+    }
+    .pa-icon {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: var(--gold-dim); display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+    }
+    .pa-lbl { font-size: .55rem; color: var(--text-muted); }
+    .app-badges { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+    .app-badge {
+      display: flex; align-items: center; gap: .7rem;
+      padding: .8rem 1.4rem;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm); text-decoration: none;
+      transition: var(--transition);
+    }
+    .app-badge:hover { border-color: var(--gold); transform: translateY(-3px); }
+    .app-badge-icon { font-size: 1.5rem; }
+    .app-badge-text { font-size: .7rem; color: var(--text-muted); }
+    .app-badge-store { font-size: .9rem; font-weight: 600; color: var(--text); display: block; }
+
+    /* ===========================
+       FAQ
+    =========================== */
+    .faq { background: var(--dark); }
+    .faq-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.5rem 4rem; margin-top: 3rem;
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 1.5rem;
+    }
+    .faq-question {
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; gap: 1rem;
+      font-size: .95rem; font-weight: 500; color: var(--text);
+      padding: .5rem 0; user-select: none;
+    }
+    .faq-toggle {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 1px solid var(--glass-border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition); font-size: 1rem; color: var(--gold);
+    }
+    .faq-item.open .faq-toggle { background: var(--gold); color: var(--dark); transform: rotate(45deg); }
+    .faq-answer {
+      font-size: .87rem; color: var(--text-muted); line-height: 1.75;
+      max-height: 0; overflow: hidden; transition: max-height .4s ease, padding .4s;
+    }
+    .faq-item.open .faq-answer { max-height: 200px; padding-top: .75rem; }
+
+    /* ===========================
+       CTA SECTION
+    =========================== */
+    .cta-section { background: var(--dark-3); }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(201,168,76,.1), rgba(42,75,140,.08));
+      border: 1px solid rgba(201,168,76,.3);
+      border-radius: 28px; padding: 5rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: ''; position: absolute;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,.08), transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    .cta-box h2 { font-size: clamp(2.5rem,5vw,4rem); }
+    .cta-box .section-desc { margin: 1.5rem auto 2.5rem; max-width: 500px; text-align: center; }
+    .cta-actions { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .btn-lg { padding: .9rem 2.2rem; font-size: 1rem; }
+
+    /* ===========================
+       FOOTER
+    =========================== */
+    footer {
+      background: var(--dark);
+      border-top: 1px solid var(--glass-border);
+      padding: 5rem 5% 3rem;
+    }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem; margin-bottom: 4rem;
+    }
+    .footer-brand p {
+      font-size: .875rem; color: var(--text-muted);
+      line-height: 1.75; margin: 1rem 0 1.5rem; max-width: 300px;
+    }
+    .footer-socials { display: flex; gap: .75rem; }
+    .social-btn {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; text-decoration: none; color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .social-btn:hover { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+    .footer-col h5 {
+      font-size: .8rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .7rem; }
+    .footer-col ul a {
+      font-size: .875rem; color: var(--text-muted); text-decoration: none; transition: color .3s;
+    }
+    .footer-col ul a:hover { color: var(--text); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 2rem; border-top: 1px solid var(--glass-border);
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-bottom p { font-size: .8rem; color: var(--text-muted); }
+    .footer-legal { display: flex; gap: 1.5rem; }
+    .footer-legal a { font-size: .8rem; color: var(--text-muted); text-decoration: none; transition: color .3s; }
+    .footer-legal a:hover { color: var(--gold); }
+
+    /* ===========================
+       ANIMATIONS
+    =========================== */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(30px); }
+      to   { opacity:1; transform:none; }
+    }
+    @keyframes fadeIn {
+      from { opacity:0; } to { opacity:1; }
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ===========================
+       RESPONSIVE
+    =========================== */
+    @media (max-width: 1100px) {
+      .hero-content { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-visual { display: flex; justify-content: center; }
+      .hero-stats { position: static; flex-direction: row; transform: none; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+      .features-grid { grid-template-columns: repeat(2,1fr); }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .stat-item:nth-child(2) { border-right: none; }
+      .products-grid { grid-template-columns: repeat(2,1fr); }
+      .steps-grid { grid-template-columns: repeat(2,1fr); }
+      .steps-grid::before { display: none; }
+      .security-layout { grid-template-columns: 1fr; }
+      .security-visual { margin: 0 auto 2rem; }
+      .app-layout { grid-template-columns: 1fr; }
+      .app-phones { margin: 0 auto; }
+      .testimonials-slider { grid-template-columns: 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .cta-box { padding: 3rem 2rem; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .features-grid { grid-template-columns: 1fr; }
+      .products-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .products-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .steps-grid { grid-template-columns: 1fr 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .footer-legal { flex-wrap: wrap; justify-content: center; }
+      h1 { font-size: 2.8rem; }
+      .section-inner { padding: 80px 5%; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--glass-border); }
+      .steps-grid { grid-template-columns: 1fr; }
+      .hero-trust { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- ===========================
+       NAVBAR
+  =========================== -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon">B</div>
+        <span class="logo-text">Baron's <span>Bank</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#comptes">Comptes</a></li>
+        <li><a href="#securite">Sécurité</a></li>
+        <li><a href="#app">Application</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+
+      <div class="nav-cta">
+        <a href="#connexion" class="btn btn-ghost">Se connecter</a>
+        <a href="#ouvrir" class="btn btn-gold">Ouvrir un compte</a>
+      </div>
+
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#services" onclick="closeMobile()">Services</a>
+    <a href="#comptes" onclick="closeMobile()">Comptes</a>
+    <a href="#securite" onclick="closeMobile()">Sécurité</a>
+    <a href="#app" onclick="closeMobile()">Application</a>
+    <a href="#faq" onclick="closeMobile()">FAQ</a>
+    <a href="#connexion" class="btn btn-ghost">Se connecter</a>
+    <a href="#ouvrir" class="btn btn-gold">Ouvrir un compte</a>
+  </div>
+
+  <!-- ===========================
+       HERO
+  =========================== -->
+  <section class="hero" id="accueil">
+    <div class="hero-grid-lines"></div>
+    <div class="hero-content">
+      <!-- Left -->
+      <div>
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Banque Privée de Prestige
+        </div>
+        <h1>
+          L'excellence <em>financière</em>
+          <strong>à votre service.</strong>
+        </h1>
+        <p class="hero-desc">
+          Baron's Bank allie tradition bancaire et innovation digitale pour vous offrir une expérience financière inégalée. Votre patrimoine, protégé et valorisé par des experts dédiés.
+        </p>
+        <div class="hero-actions">
+          <a href="#ouvrir" class="btn btn-gold btn-lg">Ouvrir un compte gratuit</a>
+          <a href="#services" class="btn btn-outline-gold btn-lg">Découvrir nos services</a>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-avatars">
+            <span>JD</span><span>MK</span><span>AC</span><span>PL</span><span>+</span>
+          </div>
+          <div class="trust-text">
+            <strong>+120 000</strong> clients nous font confiance<br/>dans 28 pays à travers le monde
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Bank Card + Stats -->
+      <div class="hero-visual">
+        <div style="position:relative;">
+          <div class="bank-card">
+            <div class="card-chip"></div>
+            <div class="card-logo">B</div>
+            <div class="card-number">**** **** **** 4291</div>
+            <div class="card-details">
+              <div>
+                <div class="card-label">Titulaire</div>
+                <div class="card-value">Alexandre Baron</div>
+              </div>
+              <div>
+                <div class="card-label">Expiration</div>
+                <div class="card-value">08 / 29</div>
+              </div>
+            </div>
+            <div class="card-contactless"></div>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-pill">
+              <div class="stat-icon">💰</div>
+              <div>
+                <div class="stat-val">+3,2%</div>
+                <div class="stat-lbl">Rendement ce mois</div>
+              </div>
+            </div>
+            <div class="stat-pill">
+              <div class="stat-icon">🔒</div>
+              <div>
+                <div class="stat-val">256-bit</div>
+                <div class="stat-lbl">Chiffrement SSL</div>
+              </div>
+            </div>
+            <div class="stat-pill">
+              <div class="stat-icon">⚡</div>
+              <div>
+                <div class="stat-val">Instantané</div>
+                <div class="stat-lbl">Virement SEPA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       TICKER
+  =========================== -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <div class="ticker-item">🏦 Banque Privée <span class="sep">•</span></div>
+      <div class="ticker-item">Compte Pro dès 0€/mois <span class="sep">•</span></div>
+      <div class="ticker-item">Crypto & Investissements <span class="sep">•</span></div>
+      <div class="ticker-item">Assurance Vie Premium <span class="sep">•</span></div>
+      <div class="ticker-item">Conseiller Dédié 24h/7j <span class="sep">•</span></div>
+      <div class="ticker-item">Carte Metal Exclusive <span class="sep">•</span></div>
+      <div class="ticker-item">Transfert International Sans Frais <span class="sep">•</span></div>
+      <div class="ticker-item">Bourse & ETF Gestion Active <span class="sep">•</span></div>
+      <!-- Repeat for seamless loop -->
+      <div class="ticker-item">🏦 Banque Privée <span class="sep">•</span></div>
+      <div class="ticker-item">Compte Pro dès 0€/mois <span class="sep">•</span></div>
+      <div class="ticker-item">Crypto & Investissements <span class="sep">•</span></div>
+      <div class="ticker-item">Assurance Vie Premium <span class="sep">•</span></div>
+      <div class="ticker-item">Conseiller Dédié 24h/7j <span class="sep">•</span></div>
+      <div class="ticker-item">Carte Metal Exclusive <span class="sep">•</span></div>
+      <div class="ticker-item">Transfert International Sans Frais <span class="sep">•</span></div>
+      <div class="ticker-item">Bourse & ETF Gestion Active <span class="sep">•</span></div>
+    </div>
+  </div>
+
+  <!-- ===========================
+       SERVICES
+  =========================== -->
+  <section class="features" id="services">
+    <div class="section-inner">
+      <div class="reveal">
+        <span class="section-label">Nos Services</span>
+        <h2>Tout ce dont vous avez besoin,<br/><em>au même endroit</em></h2>
+        <p class="section-desc">Une gamme complète de services financiers pensés pour particuliers, entrepreneurs et grandes entreprises.</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Card 1 -->
+        <div class="feature-card reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <h3>Comptes & Cartes</h3>
+          <p>Comptes courants, épargne et cartes premium avec cashback jusqu'à 3%. Gestion en temps réel depuis votre mobile.</p>
+          <a href="#" class="feature-link">En savoir plus →</a>
+        </div>
+        <!-- Card 2 -->
+        <div class="feature-card reveal" style="transition-delay:.1s">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3>Investissements</h3>
+          <p>Accédez à la bourse, aux ETF, aux obligations et aux marchés internationaux avec des frais parmi les plus bas du marché.</p>
+          <a href="#" class="feature-link">En savoir plus →</a>
+        </div>
+        <!-- Card 3 -->
+        <div class="feature-card reveal" style="transition-delay:.2s">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <h3>Crédit Immobilier</h3>
+          <p>Financement de votre résidence principale ou investissement locatif. Taux compétitifs et réponse en 48h.</p>
+          <a href="#" class="feature-link">En savoir plus →</a>
+        </div>
+        <!-- Card 4 -->
+        <div class="feature-card reveal" style="transition-delay:.3s">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Epargne & Retraite</h3>
+          <p>Plans d'épargne adaptés à votre horizon, assurance-vie multisupport et PER pour préparer votre avenir sereinement.</p>
+          <a href="#" class="feature-link">En savoir plus →</a>
+        </div>
+        <!-- Card 5 -->
+        <div class="feature-card reveal" style="transition-delay:.4s">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+          </div>
+          <h3>Virements Internationaux</h3>
+          <p>Envoyez de l'argent dans plus de 150 pays sans frais cachés. Taux de change transparent et livraison instantanée.</p>
+          <a href="#" class="feature-link">En savoir plus →</a>
+        </div>
+        <!-- Card 6 -->
+        <div class="feature-card reveal" style="transition-delay:.5s">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>Banque d'Entreprise</h3>
+          <p>Solutions complètes pour les PME et grands groupes : comptes pro, financement, gestion de trésorerie et paie.</p>
+          <a href="#" class="feature-link">En savoir plus →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       STATS
+  =========================== -->
+  <section class="stats-section">
+    <div class="section-inner" style="padding: 0;">
+      <div class="stats-grid">
+        <div class="stat-item reveal">
+          <div class="stat-number">120<span class="stat-unit">k</span></div>
+          <div class="stat-desc">Clients satisfaits</div>
+        </div>
+        <div class="stat-item reveal" style="transition-delay:.1s">
+          <div class="stat-number">28<span class="stat-unit">+</span></div>
+          <div class="stat-desc">Pays couverts</div>
+        </div>
+        <div class="stat-item reveal" style="transition-delay:.2s">
+          <div class="stat-number">4,9<span class="stat-unit">★</span></div>
+          <div class="stat-desc">Note moyenne App Store</div>
+        </div>
+        <div class="stat-item reveal" style="transition-delay:.3s">
+          <div class="stat-number">2<span class="stat-unit">Md€</span></div>
+          <div class="stat-desc">Actifs sous gestion</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       PRODUCTS
+  =========================== -->
+  <section class="products" id="comptes">
+    <div class="section-inner">
+      <div class="products-header reveal">
+        <div>
+          <span class="section-label">Nos Offres</span>
+          <h2>Choisissez votre<br/><em>compte idéal</em></h2>
+        </div>
+        <a href="#" class="btn btn-ghost">Comparer toutes les offres →</a>
+      </div>
+
+      <div class="products-grid">
+        <!-- Essential -->
+        <div class="product-card reveal">
+          <div class="product-tier">Essentiel</div>
+          <h3>Classic</h3>
+          <p style="font-size:.88rem; color:var(--text-muted)">Idéal pour démarrer. Tout ce qu'il vous faut au quotidien.</p>
+          <div class="product-price">
+            <span class="price-amount">0€</span>
+            <span class="price-period">/ mois</span>
+          </div>
+          <ul class="product-features">
+            <li>Carte Visa débit incluse</li>
+            <li>IBAN français immédiat</li>
+            <li>Virements SEPA gratuits</li>
+            <li>Application mobile complète</li>
+            <li>Assistance client 6j/7</li>
+          </ul>
+          <a href="#" class="btn btn-outline-gold" style="width:100%; justify-content:center;">Ouvrir un Classic</a>
+        </div>
+
+        <!-- Premium -->
+        <div class="product-card featured reveal" style="transition-delay:.15s">
+          <div class="product-tier">Recommandé</div>
+          <h3>Premium</h3>
+          <p style="font-size:.88rem; color:var(--text-muted)">Pour ceux qui exigent le meilleur au meilleur prix.</p>
+          <div class="product-price">
+            <span class="price-amount">9,90€</span>
+            <span class="price-period">/ mois</span>
+          </div>
+          <ul class="product-features">
+            <li>Carte Metal Premium</li>
+            <li>Cashback 2% partout</li>
+            <li>Assurance voyage incluse</li>
+            <li>Accès lounges aéroports</li>
+            <li>Conseiller dédié</li>
+            <li>Transferts internationaux offerts</li>
+          </ul>
+          <a href="#" class="btn btn-gold" style="width:100%; justify-content:center;">Ouvrir un Premium</a>
+        </div>
+
+        <!-- Private -->
+        <div class="product-card reveal" style="transition-delay:.3s">
+          <div class="product-tier">Excellence</div>
+          <h3>Baron</h3>
+          <p style="font-size:.88rem; color:var(--text-muted)">Banque privée et gestion de patrimoine sur mesure.</p>
+          <div class="product-price">
+            <span class="price-amount">49€</span>
+            <span class="price-period">/ mois</span>
+          </div>
+          <ul class="product-features">
+            <li>Carte Black Infinite</li>
+            <li>Gestionnaire de patrimoine</li>
+            <li>Investissements exclusifs</li>
+            <li>Conciergerie 24h/24</li>
+            <li>Assurance vie sur mesure</li>
+            <li>Accès événements privés</li>
+          </ul>
+          <a href="#" class="btn btn-outline-gold" style="width:100%; justify-content:center;">Devenir Baron</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       HOW IT WORKS
+  =========================== -->
+  <section class="how-section">
+    <div class="section-inner">
+      <div style="text-align:center" class="reveal">
+        <span class="section-label">Processus</span>
+        <h2>Ouvert en <em>5 minutes</em>, utilisable instantanément</h2>
+        <p class="section-desc" style="margin: 1rem auto 0; text-align:center;">Aucune paperasse, aucune agence. Tout se fait depuis votre smartphone en quelques étapes simples.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-item reveal">
+          <div class="step-number">01</div>
+          <h4>Créez votre compte</h4>
+          <p>Renseignez vos informations personnelles en moins de 3 minutes depuis l'application.</p>
+        </div>
+        <div class="step-item reveal" style="transition-delay:.15s">
+          <div class="step-number">02</div>
+          <h4>Vérifiez votre identité</h4>
+          <p>Scannez votre pièce d'identité et prenez un selfie. Validation automatique en temps réel.</p>
+        </div>
+        <div class="step-item reveal" style="transition-delay:.3s">
+          <div class="step-number">03</div>
+          <h4>Choisissez votre offre</h4>
+          <p>Sélectionnez le compte adapté à vos besoins et commencez à personnaliser.</p>
+        </div>
+        <div class="step-item reveal" style="transition-delay:.45s">
+          <div class="step-number">04</div>
+          <h4>Utilisez votre compte</h4>
+          <p>Votre IBAN est disponible immédiatement. Votre carte physique arrive sous 3 jours ouvrés.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       SECURITY
+  =========================== -->
+  <section class="security" id="securite">
+    <div class="section-inner">
+      <div class="security-layout">
+        <div class="reveal">
+          <span class="section-label">Sécurité</span>
+          <h2>Votre argent,<br/>protégé comme<br/><em>un coffre-fort</em></h2>
+          <p class="section-desc">La sécurité est au cœur de chaque décision chez Baron's Bank. Nous utilisons les technologies de protection les plus avancées.</p>
+
+          <div class="security-features">
+            <div class="sec-item">
+              <div class="sec-icon">🔐</div>
+              <div>
+                <h4>Chiffrement AES-256</h4>
+                <p>Toutes vos données sont chiffrées avec le standard militaire AES-256 bits, le plus sûr au monde.</p>
+              </div>
+            </div>
+            <div class="sec-item">
+              <div class="sec-icon">🛡️</div>
+              <div>
+                <h4>Authentification Biométrique</h4>
+                <p>Reconnaisance faciale et empreinte digitale pour un accès ultra-sécurisé à votre compte.</p>
+              </div>
+            </div>
+            <div class="sec-item">
+              <div class="sec-icon">👁️</div>
+              <div>
+                <h4>Surveillance 24h/24</h4>
+                <p>Notre IA détecte et bloque les transactions suspectes en temps réel, avant qu'elles n'aboutissent.</p>
+              </div>
+            </div>
+            <div class="sec-item">
+              <div class="sec-icon">🏛️</div>
+              <div>
+                <h4>Dépôts Garantis</h4>
+                <p>Vos dépôts sont garantis jusqu'à 100 000€ par le Fonds de Garantie des Dépôts (FGDR).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-visual reveal" style="transition-delay:.2s">
+          <div class="shield-container">
+            <div class="shield-ring"></div>
+            <div class="shield-ring"></div>
+            <div class="shield-ring"></div>
+            <div class="shield-core">🏛️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       TESTIMONIALS
+  =========================== -->
+  <section class="testimonials">
+    <div class="section-inner">
+      <div style="text-align:center" class="reveal">
+        <span class="section-label">Témoignages</span>
+        <h2>Ce que nos clients<br/><em>pensent de nous</em></h2>
+      </div>
+
+      <div class="testimonials-slider">
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Baron's Bank a totalement transformé ma vision de la banque. Interface élégante, service impeccable et investissements performants. Je ne retournerai jamais à ma banque traditionnelle."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">SM</div>
+            <div>
+              <div class="author-name">Sophie Marchetti</div>
+              <div class="author-role">CEO, Marchetti Industries</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card reveal" style="transition-delay:.15s">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Mon gestionnaire de patrimoine est exceptionnel. Il comprend mes objectifs et propose des solutions sur-mesure. Le compte Baron est clairement un investissement qui se rentabilise."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">TL</div>
+            <div>
+              <div class="author-name">Thomas Laurent</div>
+              <div class="author-role">Entrepreneur & Investisseur</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card reveal" style="transition-delay:.3s">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"J'ai ouvert mon compte en 4 minutes chrono depuis mon téléphone. Les virements internationaux sont gratuits et instantanés. Parfait pour mes activités à l'étranger."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">AB</div>
+            <div>
+              <div class="author-name">Amina Benali</div>
+              <div class="author-role">Architecte International</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       APP
+  =========================== -->
+  <section class="app-section" id="app">
+    <div class="section-inner">
+      <div class="app-layout">
+        <!-- Phone -->
+        <div class="app-phones reveal">
+          <div class="phone-mockup main" style="left:40px;">
+            <div class="phone-screen">
+              <div class="phone-notch"></div>
+              <div class="phone-balance-label">SOLDE DISPONIBLE</div>
+              <div class="phone-balance">12 480<span>,90 €</span></div>
+              <div class="phone-graph">
+                <svg viewBox="0 0 160 60" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#C9A84C" stop-opacity=".3"/>
+                      <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,45 C20,40 30,20 50,22 C70,24 80,35 100,28 C120,21 140,10 160,8" fill="none" stroke="#C9A84C" stroke-width="2"/>
+                  <path d="M0,45 C20,40 30,20 50,22 C70,24 80,35 100,28 C120,21 140,10 160,8 L160,60 L0,60Z" fill="url(#lineGrad)"/>
+                </svg>
+              </div>
+              <div class="phone-actions">
+                <div class="phone-action"><div class="pa-icon">↑</div><div class="pa-lbl">Envoyer</div></div>
+                <div class="phone-action"><div class="pa-icon">↓</div><div class="pa-lbl">Recevoir</div></div>
+                <div class="phone-action"><div class="pa-icon">💳</div><div class="pa-lbl">Carte</div></div>
+                <div class="phone-action"><div class="pa-icon">📊</div><div class="pa-lbl">Invest.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone-mockup back">
+            <div class="phone-screen">
+              <div class="phone-notch"></div>
+              <div style="font-size:.6rem; color:var(--text-muted); margin-bottom:.5rem;">TRANSACTIONS RÉCENTES</div>
+              <div style="display:flex;flex-direction:column;gap:.5rem;">
+                <div style="display:flex;justify-content:space-between; font-size:.62rem;">
+                  <span style="color:var(--text);">🛒 Carrefour</span>
+                  <span style="color:#e05c5c">-48,20€</span>
+                </div>
+                <div style="display:flex;justify-content:space-between; font-size:.62rem;">
+                  <span style="color:var(--text);">✈️ Air France</span>
+                  <span style="color:#e05c5c">-320,00€</span>
+                </div>
+                <div style="display:flex;justify-content:space-between; font-size:.62rem;">
+                  <span style="color:var(--text);">💰 Salaire</span>
+                  <span style="color:#5ce07a">+3 500€</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="reveal" style="transition-delay:.2s">
+          <span class="section-label">Application Mobile</span>
+          <h2>Votre banque dans<br/><em>votre poche</em></h2>
+          <p class="section-desc">L'application Baron's Bank est l'une des mieux notées du secteur. Intuitive, rapide et sécurisée, elle centralise tous vos services financiers.</p>
+
+          <div style="display:flex; flex-direction:column; gap:1rem; margin-top:2rem;">
+            <div style="display:flex; align-items:center; gap:1rem;">
+              <div style="width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;"></div>
+              <span style="font-size:.9rem; color:var(--text-muted)">Notifications instantanées pour chaque transaction</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem;">
+              <div style="width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;"></div>
+              <span style="font-size:.9rem; color:var(--text-muted)">Gestion budgétaire intelligente par catégorie</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem;">
+              <div style="width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;"></div>
+              <span style="font-size:.9rem; color:var(--text-muted)">Paiement sans contact par Apple Pay & Google Pay</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem;">
+              <div style="width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;"></div>
+              <span style="font-size:.9rem; color:var(--text-muted)">Tableau de bord investissements en temps réel</span>
+            </div>
+          </div>
+
+          <div class="app-badges">
+            <a href="#" class="app-badge">
+              <div class="app-badge-icon">🍎</div>
+              <div class="app-badge-text">Télécharger sur<span class="app-badge-store">App Store</span></div>
+            </a>
+            <a href="#" class="app-badge">
+              <div class="app-badge-icon">▶</div>
+              <div class="app-badge-text">Disponible sur<span class="app-badge-store">Google Play</span></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       FAQ
+  =========================== -->
+  <section class="faq" id="faq">
+    <div class="section-inner">
+      <div style="text-align:center" class="reveal">
+        <span class="section-label">FAQ</span>
+        <h2>Questions <em>fréquentes</em></h2>
+        <p class="section-desc" style="margin: 1rem auto 0; text-align:center;">Vous avez une question ? Vous trouverez probablement la réponse ici.</p>
+      </div>
+
+      <div class="faq-grid" style="margin-top:3rem;">
+        <div class="faq-item reveal">
+          <div class="faq-question">
+            Comment ouvrir un compte Baron's Bank ?
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">L'ouverture de compte se fait entièrement en ligne en moins de 5 minutes. Téléchargez notre application, renseignez vos informations, vérifiez votre identité et votre compte est activé immédiatement.</div>
+        </div>
+        <div class="faq-item reveal" style="transition-delay:.1s">
+          <div class="faq-question">
+            Mes dépôts sont-ils protégés ?
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">Oui, tous les dépôts sont garantis jusqu'à 100 000€ par le Fonds de Garantie des Dépôts et de Résolution (FGDR), conformément à la réglementation européenne.</div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-question">
+            Quels sont les frais de virement international ?
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">Les virements SEPA vers les pays de l'UE sont entièrement gratuits. Pour les transferts hors UE, le compte Premium offre 5 virements internationaux gratuits par mois. Le compte Baron bénéficie de virements illimités sans frais.</div>
+        </div>
+        <div class="faq-item reveal" style="transition-delay:.1s">
+          <div class="faq-question">
+            Comment contacter le service client ?
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">Notre équipe est disponible 7j/7 via le chat intégré à l'application, par e-mail ou par téléphone. Les clients Baron bénéficient d'une ligne directe dédiée avec un conseiller personnel disponible 24h/24.</div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-question">
+            Puis-je changer d'offre à tout moment ?
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">Oui, vous pouvez upgrader ou downgrader votre abonnement à tout moment depuis l'application, sans frais ni engagement de durée. Le changement prend effet dès le lendemain.</div>
+        </div>
+        <div class="faq-item reveal" style="transition-delay:.1s">
+          <div class="faq-question">
+            Baron's Bank est-elle une vraie banque ?
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">Absolument. Baron's Bank est un établissement de crédit agréé par l'ACPR (Autorité de Contrôle Prudentiel et de Résolution) et régulé par la Banque de France. Nous sommes soumis aux mêmes règles et obligations que toute banque traditionnelle.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       CTA
+  =========================== -->
+  <section class="cta-section" id="ouvrir">
+    <div class="section-inner">
+      <div class="cta-box reveal">
+        <span class="section-label">Commencer</span>
+        <h2>Rejoignez <em>Baron's Bank</em><br/>dès aujourd'hui</h2>
+        <p class="section-desc">Ouvrez votre compte en quelques minutes et découvrez une expérience bancaire sans compromis. Aucun frais d'ouverture. Sans engagement.</p>
+        <div class="cta-actions">
+          <a href="#" class="btn btn-gold btn-lg">Ouvrir mon compte — Gratuit</a>
+          <a href="#" class="btn btn-ghost btn-lg">Parler à un conseiller</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===========================
+       FOOTER
+  =========================== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#" class="logo" style="margin-bottom:1rem; display:inline-flex;">
+            <div class="logo-icon">B</div>
+            <span class="logo-text">Baron's <span>Bank</span></span>
+          </a>
+          <p>L'excellence financière au service de vos ambitions. Banque privée agréée ACPR, régulée par la Banque de France.</p>
+          <div class="footer-socials">
+            <a href="#" class="social-btn">𝕏</a>
+            <a href="#" class="social-btn">in</a>
+            <a href="#" class="social-btn">f</a>
+            <a href="#" class="social-btn">ig</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Services</h5>
+          <ul>
+            <li><a href="#">Comptes & Cartes</a></li>
+            <li><a href="#">Investissements</a></li>
+            <li><a href="#">Crédit Immobilier</a></li>
+            <li><a href="#">Épargne & Retraite</a></li>
+            <li><a href="#">Banque d'Entreprise</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Comptes</h5>
+          <ul>
+            <li><a href="#">Compte Classic</a></li>
+            <li><a href="#">Compte Premium</a></li>
+            <li><a href="#">Compte Baron</a></li>
+            <li><a href="#">Compte Pro</a></li>
+            <li><a href="#">Compte Junior</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Société</h5>
+          <ul>
+            <li><a href="#">À propos</a></li>
+            <li><a href="#">Carrières</a></li>
+            <li><a href="#">Presse</a></li>
+            <li><a href="#">Partenaires</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 Baron's Bank — Établissement de crédit agréé ACPR n°12345. Tous droits réservés.</p>
+        <div class="footer-legal">
+          <a href="#">Mentions légales</a>
+          <a href="#">Politique de confidentialité</a>
+          <a href="#">Conditions d'utilisation</a>
+          <a href="#">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===========================
+       JAVASCRIPT
+  =========================== -->
+  <script>
+    // ---- HAMBURGER ----
+    const btn = document.getElementById('hamburgerBtn');
+    const nav = document.getElementById('mobileNav');
+    btn.addEventListener('click', () => {
+      nav.classList.toggle('open');
+    });
+    function closeMobile() { nav.classList.remove('open'); }
+
+    // ---- SCROLL REVEAL ----
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // ---- NAVBAR SCROLL STYLE ----
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', () => {
+      navbar.style.boxShadow = window.scrollY > 50 ? '0 4px 40px rgba(0,0,0,.5)' : 'none';
+    });
+
+    // ---- FAQ ACCORDION ----
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-question').addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+
+    // ---- ACTIVE NAV LINK ----
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 200) current = section.id;
+      });
+      navLinks.forEach(link => {
+        link.style.color = link.getAttribute('href') === `#${current}` ? 'var(--gold)' : '';
+      });
+    });
+  </script>
+</body>
+</html>

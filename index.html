@@ -10,8 +10,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap"
     rel="stylesheet" />
-  <link rel="icon" type="image/png"
-    href="C:/Users/PEAQ/.gemini/antigravity/brain/d6a63c95-5068-42de-a88e-3fd2bdff2c07/barons_bank_favicon_1773477628371.png" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2305080F'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='38' font-weight='700' fill='%23C9A84C'>B</text></svg>" />
   <style>
     /* ===========================
        CSS VARIABLES & RESET
@@ -2934,52 +2934,65 @@
   <!-- ===========================
        JAVASCRIPT
   =========================== -->
-  <script type="module">
-    // ---- NEON DATABASE CONFIGURATION ----
-    // On nettoie la chaîne de connexion (parfois les paramètres URL gênent le driver HTTP)
-    let rawConn = 'postgresql://neondb_owner:npg_3Ly8WhOYmnDs@ep-lucky-haze-adjh5259-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-    const NEON_CONNECTION_STRING = rawConn.split('?')[0]; 
+  <script>
+    // ============================================================
+    //  NEON DATABASE — Connexion directe via HTTP API (fetch)
+    //  Aucune dépendance CDN requise !
+    // ============================================================
+    // ⚠️  INSTRUCTION : Remplacez NEON_HOST, NEON_DB, NEON_USER, NEON_PASS
+    //     par vos propres valeurs trouvées dans la console Neon.tech
+    //     → Dashboard → Connection Details → choisir "Pooler"
+    // ============================================================
+    const NEON_HOST = 'ep-lucky-haze-adjh5259-pooler.c-2.us-east-1.aws.neon.tech';
+    const NEON_DB = 'neondb';
+    const NEON_USER = 'neondb_owner';
+    const NEON_PASS = 'npg_3Ly8WhOYmnDs';
+    const NEON_API = `https://console.neon.tech/api/v1/sql`;
+    // Fonction utilitaire pour envoyer des requêtes SQL à Neon via HTTP
+    async function neonQuery(query, params = []) {
+      const response = await fetch(NEON_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Neon-Connection-String': `postgresql://${NEON_USER}:${NEON_PASS}@${NEON_HOST}/${NEON_DB}?sslmode=require`
+        },
+        body: JSON.stringify({ query, params })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Neon HTTP ${response.status}: ${errText}`);
+      }
+      const data = await response.json();
+      // Le format de réponse Neon HTTP: { rows: [...], fields: [...] }
+      return data.rows || [];
+    }
 
-    import { neon } from 'https://cdn.jsdelivr.net/npm/@neondatabase/serverless@0.10.1/+esm';
-    
-    let sql;
-    try {
-      sql = neon(NEON_CONNECTION_STRING);
-      console.log("Neon initialisé avec :", NEON_CONNECTION_STRING);
-      
-      // Tentative de création de la table (silencieuse si déjà fait)
-      sql`CREATE TABLE IF NOT EXISTS users (
+    // ---- INIT : Créer la table si elle n'existe pas ----
+    (async () => {
+      try {
+        await neonQuery(`CREATE TABLE IF NOT EXISTS users (
           id SERIAL PRIMARY KEY,
           name TEXT NOT NULL,
           email TEXT UNIQUE NOT NULL,
           password TEXT NOT NULL,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )`.then(() => console.log("Table 'users' prête."))
-       .catch(e => {
-         console.warn("Vérification table :", e.message);
-         // Si c'est une erreur de connexion, on alerte
-         if (e.message.includes('fetch')) alert("Erreur de connexion à Neon (CORS ou réseau). Vérifiez votre console F12.");
-       });
-    } catch (e) {
-      alert("Erreur critique initialisation Neon : " + e.message);
-    }
+        )`);
+        console.log('✅ Connexion Neon OK — Table users prête.');
+      } catch (e) {
+        console.error('❌ Erreur Neon init:', e.message);
+      }
+    })();
 
     // ---- HAMBURGER ----
-    const btn = document.getElementById('hamburgerBtn');
-    const nav = document.getElementById('mobileNav');
-    btn.addEventListener('click', () => {
-      nav.classList.toggle('open');
-    });
-    function closeMobile() { nav.classList.remove('open'); }
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburgerBtn.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    function closeMobile() { mobileNav.classList.remove('open'); }
 
     // ---- SCROLL REVEAL ----
     const reveals = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-        }
-      });
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     reveals.forEach(el => observer.observe(el));
 
@@ -2999,131 +3012,105 @@
     });
 
     // ---- ACTIVE NAV LINK ----
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-links a');
+    const allSections = document.querySelectorAll('section[id]');
+    const allNavLinks = document.querySelectorAll('.nav-links a');
     window.addEventListener('scroll', () => {
       let current = '';
-      sections.forEach(section => {
-        if (window.scrollY >= section.offsetTop - 200) current = section.id;
-      });
-      navLinks.forEach(link => {
-        link.style.color = link.getAttribute('href') === `#${current}` ? 'var(--gold)' : '';
-      });
+      allSections.forEach(s => { if (window.scrollY >= s.offsetTop - 200) current = s.id; });
+      allNavLinks.forEach(l => { l.style.color = l.getAttribute('href') === `#${current}` ? 'var(--gold)' : ''; });
     });
 
-    // ---- AUTH LOGIC ----
+    // ---- AUTH MODALS ----
     function openModal(id) {
       document.getElementById(id).classList.add('open');
       document.body.style.overflow = 'hidden';
     }
-
     function closeModal(id) {
       document.getElementById(id).classList.remove('open');
       document.body.style.overflow = '';
     }
 
     function showToast(msg) {
-      const toast = document.getElementById('authToast');
+      const t = document.getElementById('authToast');
       document.getElementById('toastMsg').innerText = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 4000);
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 4000);
     }
 
-    // Signup Implementation
+    // ---- SIGNUP ----
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('reg-name').value;
-      const email = document.getElementById('reg-email').value;
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password').value;
 
       try {
+        // Vérifier si l'email existe déjà
+        const existing = await neonQuery('SELECT email FROM users WHERE email = $1', [email]);
+        if (existing.length > 0) { alert('Cet email est déjà utilisé.'); return; }
 
-        // Check if user exists
-        const existing = await sql`SELECT email FROM users WHERE email = ${email}`;
-        if (existing.length > 0) {
-          alert('Cet email est déjà utilisé.');
-          return;
-        }
-
-        // Insert new user
-        await sql`INSERT INTO users (name, email, password) VALUES (${name}, ${email}, ${password})`;
+        // Insérer le nouvel utilisateur
+        await neonQuery('INSERT INTO users (name, email, password) VALUES ($1, $2, $3)', [name, email, password]);
 
         closeModal('signupModal');
-        showToast(`Félicitations ${name}, votre compte a été créé avec succès !`);
+        showToast(`Félicitations ${name}, votre compte a été créé !`);
         handleSuccessfulLogin(name);
       } catch (err) {
-        console.error(err);
-        alert('Erreur lors de la création du compte : ' + err.message);
+        console.error('Signup error:', err);
+        alert('Erreur création de compte : ' + err.message);
       }
     });
 
-    // Login Implementation
+    // ---- LOGIN ----
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('log-email').value;
+      const email = document.getElementById('log-email').value.trim();
       const password = document.getElementById('log-password').value;
 
       try {
-
-        const users = await sql`SELECT name FROM users WHERE email = ${email} AND password = ${password}`;
-
-        if (users.length > 0) {
-          const user = users[0];
+        const rows = await neonQuery('SELECT name FROM users WHERE email = $1 AND password = $2', [email, password]);
+        if (rows.length > 0) {
           closeModal('loginModal');
-          showToast(`Heureux de vous revoir, ${user.name} !`);
-          handleSuccessfulLogin(user.name);
+          showToast(`Heureux de vous revoir, ${rows[0].name} !`);
+          handleSuccessfulLogin(rows[0].name);
         } else {
           alert('Email ou mot de passe incorrect.');
         }
       } catch (err) {
-        console.error(err);
-        alert('Erreur lors de la connexion : ' + err.message);
+        console.error('Login error:', err);
+        alert('Erreur connexion : ' + err.message);
       }
     });
 
+    // ---- UI après connexion ----
     function handleSuccessfulLogin(name) {
-      // Update UI to show logged in state
       const navCta = document.querySelector('.nav-cta');
       const mobileCta = document.getElementById('mobileNav');
-
-      const loggedInHtml = `
-        <span style="font-size: 0.9rem; color: var(--gold); font-weight: 600;">Bienvenue, ${name.split(' ')[0]}</span>
-        <a href="javascript:void(0)" onclick="location.reload()" class="btn btn-ghost">Déconnexion</a>
+      const firstName = name.split(' ')[0];
+      const html = `
+        <span style="font-size:.9rem;color:var(--gold);font-weight:600;">👤 ${firstName}</span>
+        <a href="javascript:void(0)" onclick="sessionStorage.removeItem('barons_session');location.reload()" class="btn btn-ghost">Déconnexion</a>
       `;
-
-      navCta.innerHTML = loggedInHtml;
-
-      // Update mobile nav as well
+      navCta.innerHTML = html;
       const mobileBtns = mobileCta.querySelectorAll('.btn');
       mobileBtns.forEach(b => b.remove());
-      const div = document.createElement('div');
-      div.style.padding = '1rem 0';
-      div.innerHTML = loggedInHtml;
-      mobileCta.appendChild(div);
-
-      // Save session
+      const d = document.createElement('div');
+      d.style.padding = '1rem 0';
+      d.innerHTML = html;
+      mobileCta.appendChild(d);
       sessionStorage.setItem('barons_session', name);
     }
 
-    // Check for existing session on load
+    // ---- Session persistante ----
     window.addEventListener('load', () => {
-      const session = sessionStorage.getItem('barons_session');
-      if (session) {
-        handleSuccessfulLogin(session);
-      }
+      const s = sessionStorage.getItem('barons_session');
+      if (s) handleSuccessfulLogin(s);
     });
 
-    // Close modals on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closeModal(overlay.id);
-      });
+    // ---- Fermer modal en cliquant à l'extérieur ----
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+      o.addEventListener('click', (e) => { if (e.target === o) closeModal(o.id); });
     });
-
-    // Make functions global for inline onclick handlers (since it's a module now)
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.closeMobile = closeMobile;
   </script>
 </body>
 
